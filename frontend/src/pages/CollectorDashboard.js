@@ -72,35 +72,52 @@ const CollectorDashboard = () => {
     fetchAvailablePoints();
     fetchCollections();
 
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    const wsUrl = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
-    const websocket = new WebSocket(`${wsUrl}/ws/notifications`);
+    // Connect WebSocket after a delay to ensure auth is complete
+    const wsTimeout = setTimeout(() => {
+      // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+      const wsUrl = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+      const websocket = new WebSocket(`${wsUrl}/ws/notifications`);
 
-    websocket.onopen = () => {
-      console.log('WebSocket connected');
-    };
+      websocket.onopen = () => {
+        console.log('WebSocket connected');
+        // Send a ping to keep connection alive
+        const pingInterval = setInterval(() => {
+          if (websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify({ type: 'ping' }));
+          }
+        }, 30000);
+        websocket.pingInterval = pingInterval;
+      };
 
-    websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'new_publication') {
-        toast.success(`Nova publicação: ${data.data.restaurant_name} - ${data.data.volume_liters}L`);
-        fetchAvailablePoints();
-      }
-    };
+      websocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_publication') {
+          toast.success(`Nova publicação: ${data.data.restaurant_name} - ${data.data.volume_liters}L`);
+          fetchAvailablePoints();
+        }
+      };
 
-    websocket.onerror = () => {
-      console.error('WebSocket error');
-    };
+      websocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
 
-    websocket.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
+      websocket.onclose = () => {
+        console.log('WebSocket disconnected');
+        if (websocket.pingInterval) {
+          clearInterval(websocket.pingInterval);
+        }
+      };
 
-    setWs(websocket);
+      setWs(websocket);
+    }, 1000);
 
     return () => {
-      if (websocket) {
-        websocket.close();
+      clearTimeout(wsTimeout);
+      if (ws) {
+        if (ws.pingInterval) {
+          clearInterval(ws.pingInterval);
+        }
+        ws.close();
       }
     };
   }, [fetchAvailablePoints, fetchCollections]);
