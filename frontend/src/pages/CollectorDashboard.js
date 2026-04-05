@@ -6,7 +6,7 @@ import axios from 'axios';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Leaf, LogOut, MapPin, Calendar, CheckCircle, Droplet } from 'lucide-react';
+import { Leaf, LogOut, MapPin, Calendar, CheckCircle, Droplet, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -227,6 +227,14 @@ const CollectorDashboard = () => {
               <p className="text-xs text-[#4A5D4E]">{user?.email}</p>
             </div>
             <Button
+              onClick={() => navigate('/settings')}
+              variant="outline"
+              data-testid="settings-button"
+              className="border-[#D1D9D3] text-[#4A5D4E] hover:bg-[#E8F0E9] rounded-full"
+            >
+              <SettingsIcon className="w-4 h-4" />
+            </Button>
+            <Button
               onClick={handleLogout}
               variant="outline"
               data-testid="logout-button"
@@ -242,8 +250,7 @@ const CollectorDashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Map */}
-          <Card className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between mb-4">
+          <Card className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm overflow-hidden relative z-0">\n            <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-semibold text-[#1A2E1F]" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 Pontos Disponíveis
               </h2>

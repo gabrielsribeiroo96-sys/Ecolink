@@ -42,3 +42,36 @@
         font-family: 'Outfit', sans-serif;
     }
 }
+
+/* High Contrast Mode */
+.high-contrast {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --primary: 142 100% 20%;
+    --primary-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+}
+
+.high-contrast .bg-gradient-to-br {
+    background: white !important;
+}
+
+.high-contrast .text-\\[\\#4A5D4E\\],
+.high-contrast .text-\\[\\#1A2E1F\\] {
+    color: #000 !important;
+}
+
+.high-contrast .bg-\\[\\#2D5A36\\] {
+    background-color: #000 !important;
+}
+
+.high-contrast .border-\\[\\#D1D9D3\\] {
+    border-color: #000 !important;
+    border-width: 2px !important;
+}
+
+.high-contrast .shadow-sm,
+.high-contrast .shadow-md {
+    box-shadow: 0 0 0 2px #000 !important;
+}

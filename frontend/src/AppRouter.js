@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import RestaurantDashboard from './pages/RestaurantDashboard';
 import CollectorDashboard from './pages/CollectorDashboard';
+import Settings from './pages/Settings';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user, loading } = useAuth();
@@ -65,6 +66,14 @@ const AppRouter = () => {
         element={
           <ProtectedRoute allowedRole="collector">
             <CollectorDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         }
       />

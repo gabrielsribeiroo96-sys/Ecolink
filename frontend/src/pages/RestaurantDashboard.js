@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import axios from 'axios';
-import { Leaf, Droplet, TrendingUp, LogOut, Plus } from 'lucide-react';
+import { Leaf, Droplet, TrendingUp, LogOut, Plus, Settings as SettingsIcon, MapPin } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -105,6 +105,14 @@ const RestaurantDashboard = () => {
               <p className="text-xs text-[#4A5D4E]">{user?.email}</p>
             </div>
             <Button
+              onClick={() => navigate('/settings')}
+              variant="outline"
+              data-testid="settings-button"
+              className="border-[#D1D9D3] text-[#4A5D4E] hover:bg-[#E8F0E9] rounded-full"
+            >
+              <SettingsIcon className="w-4 h-4" />
+            </Button>
+            <Button
               onClick={handleLogout}
               variant="outline"
               data-testid="logout-button"
@@ -119,6 +127,35 @@ const RestaurantDashboard = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Restaurant Info Card */}
+          <Card className="lg:col-span-3 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm mb-6" data-testid="restaurant-info-card">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-[#1A2E1F] mb-1" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                  {user?.name}
+                </h2>
+                <p className="text-sm text-[#4A5D4E] flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  {user?.address || 'Endereço não informado'}
+                </p>
+              </div>
+              <div className="flex gap-4">
+                {user?.contact && (
+                  <div className="text-right">
+                    <p className="text-xs text-[#4A5D4E]">Contato</p>
+                    <p className="text-sm font-medium text-[#1A2E1F]">{user.contact}</p>
+                  </div>
+                )}
+                {user?.cnpj_cpf && (
+                  <div className="text-right">
+                    <p className="text-xs text-[#4A5D4E]">CNPJ/CPF</p>
+                    <p className="text-sm font-medium text-[#1A2E1F]">{user.cnpj_cpf}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+
           {/* Publish Oil Card */}
           <Card className="lg:col-span-2 bg-white rounded-2xl p-8 border border-[#D1D9D3] shadow-sm">
             <h2 className="text-2xl font-semibold text-[#1A2E1F] mb-6" style={{ fontFamily: "'Outfit', sans-serif" }}>

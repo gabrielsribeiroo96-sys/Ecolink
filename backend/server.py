@@ -187,6 +187,29 @@ async def logout(response: Response):
     response.delete_cookie("refresh_token", path="/")
     return {"message": "Logged out successfully"}
 
+class UpdateProfileInput(BaseModel):
+    name: Optional[str] = None
+    contact: Optional[str] = None
+    address: Optional[str] = None
+    cnpj_cpf: Optional[str] = None
+
+@api_router.put("/profile/update")
+async def update_profile(input: UpdateProfileInput, user: dict = Depends(get_current_user)):
+    update_data = {}
+    if input.name:
+        update_data["name"] = input.name
+    if input.contact:
+        update_data["contact"] = input.contact
+    if input.address:
+        update_data["address"] = input.address
+    if input.cnpj_cpf:
+        update_data["cnpj_cpf"] = input.cnpj_cpf
+    
+    if update_data:
+        await db.users.update_one({"email": user["email"]}, {"$set": update_data})
+    
+    return {"message": "Profile updated successfully"}
+
 @api_router.post("/restaurants/publish-oil")
 async def publish_oil(input: PublishOilInput, user: dict = Depends(get_current_user)):
     if user["role"] != "restaurant":
