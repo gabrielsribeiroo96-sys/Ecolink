@@ -1,0 +1,105 @@
+{
+  "theme": "Light",
+  "archetype": "1 (Organic & Earthy)",
+  "emotional_tone": "Approachable, sustainable, reliable, and grounded.",
+  "colors": {
+    "background": {
+      "primary": "#FBFBF9",
+      "secondary": "#F0F2EB",
+      "tertiary": "#E2E6D9"
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "glass": "bg-white/80 backdrop-blur-xl border border-white/40"
+    },
+    "text": {
+      "primary": "#1A2E1F",
+      "secondary": "#4A5D4E",
+      "disabled": "#A0ACA3",
+      "inverse": "#FFFFFF"
+    },
+    "brand": {
+      "primary": "#2D5A36",
+      "primary_hover": "#22452A",
+      "primary_light": "#E8F0E9",
+      "accent": "#E5A91E",
+      "accent_hover": "#C99115",
+      "accent_light": "#FCF3D9"
+    },
+    "status": {
+      "success": "#3B82F6",
+      "warning": "#E5A91E",
+      "error": "#EF4444",
+      "info": "#3B82F6"
+    },
+    "border": {
+      "default": "#D1D9D3",
+      "focus": "#2D5A36"
+    }
+  },
+  "typography": {
+    "font_family": {
+      "heading": "'Outfit', sans-serif",
+      "body": "'Manrope', sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-none",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-medium tracking-tight",
+      "h3": "text-xl sm:text-2xl font-medium tracking-tight",
+      "h4": "text-lg sm:text-xl font-medium",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-secondary",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-secondary"
+    }
+  },
+  "spacing_and_layout": {
+    "general": "Generous spacing. Use p-6, p-8, p-12. Avoid cramped containers.",
+    "border_radius": "rounded-2xl for large cards, rounded-xl for standard cards, rounded-full for buttons/badges.",
+    "shadows": "Ambient diffuse shadows: shadow-[0_8px_32px_rgba(45,90,54,0.08)]",
+    "grids": "Use 'Control Room' grid for Dashboard (grid-cols-1 md:grid-cols-3 lg:grid-cols-4, gap-6). Use 'Bento' for marketing/landing (gap-8)."
+  },
+  "components": {
+    "buttons": "Primary: bg-brand-primary text-white hover:bg-brand-primary-hover rounded-full px-6 py-3 transition-colors duration-200. Accent (Golden): bg-brand-accent text-white hover:bg-brand-accent-hover rounded-full.",
+    "cards": "bg-white rounded-2xl p-6 border border-border-default shadow-sm hover:shadow-md transition-shadow duration-200.",
+    "inputs": "bg-white border border-border-default rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all.",
+    "map": "Rounded-2xl overflow-hidden border border-border-default shadow-sm."
+  },
+  "media": {
+    "images": [
+      {
+        "category": "hero_restaurant",
+        "url": "https://images.unsplash.com/photo-1746494557235-9e99f3193101?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwyfHxyZXN0YXVyYW50JTIwa2l0Y2hlbiUyMGNvb2tpbmd8ZW58MHx8fHwxNzc1NDI5NDg3fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Chef carefully prepares plates, perfect for restaurant dashboard hero or onboarding."
+      },
+      {
+        "category": "oil_recycling",
+        "url": "https://images.unsplash.com/photo-1768689033119-c37274b3c9de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwzfHxjb29raW5nJTIwb2lsJTIwcmVjeWNsaW5nfGVufDB8fHx8MTc3NTQyOTQ4N3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Golden oil pouring, suitable for 'volume collected' impact metrics or collector dashboard."
+      },
+      {
+        "category": "eco_impact",
+        "url": "https://images.unsplash.com/photo-1590073139156-861678ba66f5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxlY28lMjBmcmllbmRseSUyMGdyZWVuJTIwbGVhdmVzfGVufDB8fHx8MTc3NTQyOTQ4N3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Macro photography of green leaf, use for ecological impact dashboard sections."
+      }
+    ],
+    "icons": "Use lucide-react (already available) for all system icons. Use leaf, MapPin, Droplet, Truck, TrendingUp."
+  },
+  "animations": {
+    "hover": "transition-transform hover:-translate-y-1 hover:shadow-lg duration-200",
+    "entrance": "Staggered fade-in for dashboard widgets."
+  },
+  "instructions_to_main_agent": {
+    "tech_stack": "React, Tailwind CSS, Shadcn/UI (though user mentioned pure HTML/JS, follow system constraint using React/Tailwind but keep the UI looking clean and simple).",
+    "pages_to_build": [
+      "1. Login/Signup (Role Selection: Restaurant vs Collector)",
+      "2. Restaurant Dashboard (Volume entry, Publish Availability, Impact Metrics)",
+      "3. Collector Dashboard (Interactive Map of available oil points, Route builder, Confirmation)"
+    ],
+    "ux_rules": [
+      "Ensure strong contrast. Text colors over brand-primary should be white.",
+      "Collector map should occupy significant space (Control Room grid style).",
+      "Use 'data-testid' on all interactive elements (e.g., data-testid='login-button', data-testid='publish-oil-btn').",
+      "Do NOT use heavy card components unnecessarily; go for flat rectangular shapes with subtle borders for widgets."
+    ]
+  }
+}
