@@ -21,8 +21,14 @@ const Settings = () => {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     contact: user?.contact || '',
-    address: user?.address || '',
-    cnpj_cpf: user?.cnpj_cpf || ''
+    cnpj_cpf: user?.cnpj_cpf || '',
+    cep: user?.cep || '',
+    street: user?.street || '',
+    number: user?.number || '',
+    complement: user?.complement || '',
+    neighborhood: user?.neighborhood || '',
+    city: user?.city || '',
+    state: user?.state || ''
   });
 
   const handleChange = (e) => {
@@ -55,6 +61,8 @@ const Settings = () => {
       navigate('/dashboard/collector');
     }
   };
+
+  const isRestaurant = user?.role === 'restaurant';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#E8F0E9] via-[#FBFBF9] to-[#FCF3D9]">
@@ -174,25 +182,115 @@ const Settings = () => {
                     />
                   </div>
                 </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="address" className="text-[#1A2E1F] font-medium mb-2 block">Endereço</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A5D4E]" />
-                    <Input
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      placeholder="Rua, número, bairro"
-                      data-testid="settings-address-input"
-                      className="pl-12 bg-white border-[#D1D9D3] rounded-xl h-12"
-                    />
-                  </div>
-                </div>
               </div>
 
-              <div className="flex justify-end gap-4">
+              {/* Address Section - More detailed for restaurants */}
+              {isRestaurant && (
+                <div className="mt-8 pt-6 border-t border-[#E2E6D9]">
+                  <h3 className="text-xl font-semibold text-[#1A2E1F] mb-4 flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                    <MapPin className="w-5 h-5" />
+                    Endereço Completo
+                  </h3>
+                  <p className="text-sm text-[#4A5D4E] mb-4">
+                    Este endereço será usado automaticamente quando você publicar óleo disponível no mapa.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <Label htmlFor="cep" className="text-[#1A2E1F] font-medium mb-2 block">CEP</Label>
+                      <Input
+                        id="cep"
+                        name="cep"
+                        value={formData.cep}
+                        onChange={handleChange}
+                        placeholder="00000-000"
+                        data-testid="settings-cep-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="street" className="text-[#1A2E1F] font-medium mb-2 block">Rua/Avenida</Label>
+                      <Input
+                        id="street"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleChange}
+                        placeholder="Nome da rua"
+                        data-testid="settings-street-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="number" className="text-[#1A2E1F] font-medium mb-2 block">Número</Label>
+                      <Input
+                        id="number"
+                        name="number"
+                        value={formData.number}
+                        onChange={handleChange}
+                        placeholder="123"
+                        data-testid="settings-number-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="complement" className="text-[#1A2E1F] font-medium mb-2 block">Complemento</Label>
+                      <Input
+                        id="complement"
+                        name="complement"
+                        value={formData.complement}
+                        onChange={handleChange}
+                        placeholder="Apto, Sala, etc (opcional)"
+                        data-testid="settings-complement-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="neighborhood" className="text-[#1A2E1F] font-medium mb-2 block">Bairro</Label>
+                      <Input
+                        id="neighborhood"
+                        name="neighborhood"
+                        value={formData.neighborhood}
+                        onChange={handleChange}
+                        placeholder="Centro"
+                        data-testid="settings-neighborhood-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="city" className="text-[#1A2E1F] font-medium mb-2 block">Cidade</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        placeholder="São Paulo"
+                        data-testid="settings-city-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="state" className="text-[#1A2E1F] font-medium mb-2 block">Estado</Label>
+                      <Input
+                        id="state"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        placeholder="SP"
+                        maxLength={2}
+                        data-testid="settings-state-input"
+                        className="bg-white border-[#D1D9D3] rounded-xl h-12"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-4 pt-4">
                 <Button
                   type="button"
                   variant="outline"

@@ -47,35 +47,25 @@ const RestaurantDashboard = () => {
 
     setLoading(true);
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            await axios.post(
-              `${BACKEND_URL}/api/restaurants/publish-oil`,
-              {
-                volume_liters: parseFloat(volume),
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-              },
-              { withCredentials: true }
-            );
-            toast.success('Óleo publicado com sucesso! Coletores serão notificados.');
-            setVolume('');
-            fetchStats();
-          } catch (error) {
-            toast.error('Erro ao publicar óleo: ' + (error.response?.data?.detail || error.message));
-          } finally {
-            setLoading(false);
-          }
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/restaurants/publish-oil`,
+        {
+          volume_liters: parseFloat(volume)
         },
-        () => {
-          toast.error('Não foi possível obter sua localização');
-          setLoading(false);
-        }
+        { withCredentials: true }
       );
-    } else {
-      toast.error('Geolocalização não suportada');
+      toast.success('Óleo publicado com sucesso! Coletores serão notificados.');
+      setVolume('');
+      fetchStats();
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail || error.message;
+      if (errorMsg.includes('endereço')) {
+        toast.error(errorMsg + ' Vá em Configurações para cadastrar seu endereço completo.');
+      } else {
+        toast.error('Erro ao publicar óleo: ' + errorMsg);
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -130,13 +120,19 @@ const RestaurantDashboard = () => {
           {/* Restaurant Info Card */}
           <Card className="lg:col-span-3 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm mb-6" data-testid="restaurant-info-card">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
+              <div className="flex-1">
                 <h2 className="text-xl font-semibold text-[#1A2E1F] mb-1" style={{ fontFamily: "'Outfit', sans-serif" }}>
                   {user?.name}
                 </h2>
                 <p className="text-sm text-[#4A5D4E] flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  {user?.address || 'Endereço não informado'}
+                  {user?.street && user?.city ? (
+                    `${user.street}${user.number ? ', ' + user.number : ''}${user.neighborhood ? ' - ' + user.neighborhood : ''}, ${user.city}${user.state ? ' - ' + user.state : ''}`
+                  ) : (
+                    <span className="text-[#E5A91E] font-medium">
+                      Endereço não cadastrado - Clique em Configurações para adicionar
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="flex gap-4">

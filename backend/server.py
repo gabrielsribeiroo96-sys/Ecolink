@@ -83,8 +83,6 @@ class LoginInput(BaseModel):
 
 class PublishOilInput(BaseModel):
     volume_liters: float
-    latitude: float
-    longitude: float
 
 class ScheduleCollectionInput(BaseModel):
     publication_ids: List[str]
@@ -190,8 +188,47 @@ async def logout(response: Response):
 class UpdateProfileInput(BaseModel):
     name: Optional[str] = None
     contact: Optional[str] = None
-    address: Optional[str] = None
     cnpj_cpf: Optional[str] = None
+    cep: Optional[str] = None
+    street: Optional[str] = None
+    number: Optional[str] = None
+    complement: Optional[str] = None
+    neighborhood: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+
+async def geocode_address(street: str, number: str, city: str, state: str) -> tuple:
+    """Geocode address using Nominatim (OpenStreetMap)"""
+    try:
+        import urllib.parse
+        import requests
+        
+        address_parts = []
+        if street:
+            address_parts.append(street)
+        if number:
+            address_parts.append(number)
+        if city:
+            address_parts.append(city)
+        if state:
+            address_parts.append(state)
+        
+        full_address = ", ".join(address_parts) + ", Brasil"
+        encoded_address = urllib.parse.quote(full_address)
+        
+        url = f"https://nominatim.openstreetmap.org/search?q={encoded_address}&format=json&limit=1"
+        headers = {"User-Agent": "Ecolink/1.0"}
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        data = response.json()
+        
+        if data and len(data) > 0:
+            return float(data[0]["lat"]), float(data[0]["lon"])
+        
+        return None, None
+    except Exception as e:
+        logger.error(f"Geocoding error: {e}")
+        return None, None
 
 @api_router.put("/profile/update")
 async def update_profile(input: UpdateProfileInput, user: dict = Depends(get_current_user)):
@@ -200,10 +237,41 @@ async def update_profile(input: UpdateProfileInput, user: dict = Depends(get_cur
         update_data["name"] = input.name
     if input.contact:
         update_data["contact"] = input.contact
-    if input.address:
-        update_data["address"] = input.address
     if input.cnpj_cpf:
         update_data["cnpj_cpf"] = input.cnpj_cpf
+    
+    # Update address fields
+    if input.cep is not None:
+        update_data["cep"] = input.cep
+    if input.street is not None:
+        update_data["street"] = input.street
+    if input.number is not None:
+        update_data["number"] = input.number
+    if input.complement is not None:
+        update_data["complement"] = input.complement
+    if input.neighborhood is not None:
+        update_data["neighborhood"] = input.neighborhood
+    if input.city is not None:
+        update_data["city"] = input.city
+    if input.state is not None:
+        update_data["state"] = input.state
+    
+    # If address changed and user is a restaurant, geocode it
+    if user["role"] == "restaurant" and (input.street or input.city):
+        street = input.street or user.get("street", "")
+        number = input.number or user.get("number", "")
+        city = input.city or user.get("city", "")
+        state = input.state or user.get("state", "")
+        
+        lat, lng = await geocode_address(street, number, city, state)
+        
+        if lat and lng:
+            update_data["location"] = {
+                "type": "Point",
+                "coordinates": [lng, lat]
+            }
+            update_data["latitude"] = lat
+            update_data["longitude"] = lng
     
     if update_data:
         await db.users.update_one({"email": user["email"]}, {"$set": update_data})
@@ -218,16 +286,41 @@ async def publish_oil(input: PublishOilInput, user: dict = Depends(get_current_u
     if input.volume_liters < 10:
         raise HTTPException(status_code=422, detail="Minimum volume is 10 liters")
     
+    # Get user's saved location
+    latitude = user.get("latitude")
+    longitude = user.get("longitude")
+    
+    if not latitude or not longitude:
+        raise HTTPException(
+            status_code=400, 
+            detail="Você precisa cadastrar seu endereço completo nas configurações antes de publicar óleo"
+        )
+    
+    # Build full address string
+    address_parts = []
+    if user.get("street"):
+        address_parts.append(user.get("street"))
+    if user.get("number"):
+        address_parts.append(user.get("number"))
+    if user.get("neighborhood"):
+        address_parts.append(user.get("neighborhood"))
+    if user.get("city"):
+        address_parts.append(user.get("city"))
+    if user.get("state"):
+        address_parts.append(user.get("state"))
+    
+    full_address = ", ".join(address_parts) if address_parts else "Endereço não informado"
+    
     publication_doc = {
         "publication_id": str(uuid.uuid4()),
         "restaurant_id": user["email"],
         "restaurant_name": user["name"],
-        "restaurant_address": user.get("address", ""),
+        "restaurant_address": full_address,
         "volume_liters": input.volume_liters,
         "status": "available",
         "location": {
             "type": "Point",
-            "coordinates": [input.longitude, input.latitude]
+            "coordinates": [longitude, latitude]
         },
         "published_at": datetime.now(timezone.utc).isoformat()
     }
@@ -247,8 +340,8 @@ async def publish_oil(input: PublishOilInput, user: dict = Depends(get_current_u
             "publication_id": publication_doc["publication_id"],
             "restaurant_name": publication_doc["restaurant_name"],
             "volume_liters": publication_doc["volume_liters"],
-            "latitude": input.latitude,
-            "longitude": input.longitude
+            "latitude": latitude,
+            "longitude": longitude
         }
     })
     
