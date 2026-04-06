@@ -250,7 +250,8 @@ const CollectorDashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Map */}
-          <Card className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm overflow-hidden relative z-0">\n            <div className="flex items-center justify-between mb-4">
+          <Card className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#D1D9D3] shadow-sm overflow-hidden relative z-0">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-semibold text-[#1A2E1F]" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 Pontos Disponíveis
               </h2>
