@@ -86,9 +86,15 @@ class RegisterInput(BaseModel):
     password: str
     name: str
     role: Literal["restaurant", "collector"]
-    address: Optional[str] = None
     cnpj_cpf: Optional[str] = None
     contact: Optional[str] = None
+    cep: Optional[str] = None
+    street: Optional[str] = None
+    number: Optional[str] = None
+    complement: Optional[str] = None
+    neighborhood: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
 
@@ -148,12 +154,24 @@ async def register(input: RegisterInput, response: Response):
         "password_hash": hashed,
         "name": input.name,
         "role": input.role,
-        "address": input.address,
         "cnpj_cpf": input.cnpj_cpf,
         "contact": input.contact,
+        "cep": input.cep,
+        "street": input.street,
+        "number": input.number,
+        "complement": input.complement,
+        "neighborhood": input.neighborhood,
+        "city": input.city,
+        "state": input.state,
         "latitude": input.latitude,
         "longitude": input.longitude,
     }
+
+    if not input.latitude and input.street and input.city:
+        lat, lng = await geocode_address(input.street, input.number or "", input.city, input.state or "")
+        if lat and lng:
+            user_doc["latitude"] = lat
+            user_doc["longitude"] = lng
 
     result = await supabase.table("users").insert(user_doc).execute()
     inserted_user = result.data[0]
