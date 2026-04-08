@@ -20,6 +20,7 @@ const Register = () => {
     latitude: null,
     longitude: null
   });
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -50,6 +51,12 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password !== confirmPassword) {
+      toast.error('As senhas não coincidem');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -158,6 +165,26 @@ const Register = () => {
                     className="pl-12 bg-white border-[#D1D9D3] rounded-xl h-12"
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword" className="text-[#1A2E1F] font-medium mb-2 block">Confirmar Senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A5D4E]" />
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="pl-12 bg-white border-[#D1D9D3] rounded-xl h-12"
+                  />
+                </div>
+                {confirmPassword && formData.password !== confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">As senhas não coincidem</p>
+                )}
               </div>
 
               <div>

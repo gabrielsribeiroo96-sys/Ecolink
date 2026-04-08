@@ -35,6 +35,30 @@ const Settings = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleCepBlur = async (e) => {
+    const cep = e.target.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        toast.error('CEP não encontrado');
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        street: data.logradouro || prev.street,
+        neighborhood: data.bairro || prev.neighborhood,
+        city: data.localidade || prev.city,
+        state: data.uf || prev.state,
+      }));
+      toast.success('Endereço preenchido automaticamente!');
+    } catch {
+      toast.error('Erro ao buscar CEP');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -202,6 +226,7 @@ const Settings = () => {
                         name="cep"
                         value={formData.cep}
                         onChange={handleChange}
+                        onBlur={handleCepBlur}
                         placeholder="00000-000"
                         data-testid="settings-cep-input"
                         className="bg-white border-[#D1D9D3] rounded-xl h-12"
