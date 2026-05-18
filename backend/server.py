@@ -511,18 +511,21 @@ app.add_middleware(
 async def startup_event():
     global supabase
     supabase = await async_create_client(SUPABASE_URL, SUPABASE_KEY)
-    logger.info("Connected to Supabase")
+    logger.info("Supabase client initialized")
 
-    admin_email = os.environ.get("ADMIN_EMAIL", "admin@ecolink.com")
-    admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+    try:
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@ecolink.com")
+        admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
 
-    existing = await supabase.table("users").select("id").eq("email", admin_email).limit(1).execute()
-    if not existing.data:
-        hashed = hash_password(admin_password)
-        await supabase.table("users").insert({
-            "email": admin_email,
-            "password_hash": hashed,
-            "name": "Admin",
-            "role": "collector",
-        }).execute()
-        logger.info(f"Admin user created: {admin_email}")
+        existing = await supabase.table("users").select("id").eq("email", admin_email).limit(1).execute()
+        if not existing.data:
+            hashed = hash_password(admin_password)
+            await supabase.table("users").insert({
+                "email": admin_email,
+                "password_hash": hashed,
+                "name": "Admin",
+                "role": "collector",
+            }).execute()
+            logger.info(f"Admin user created: {admin_email}")
+    except Exception as e:
+        logger.warning(f"Startup check failed (non-fatal): {e}")
